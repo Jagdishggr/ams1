@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Management System</title>
+    <style>
+        #heading {
+  color: #fff;
+  margin: 80px auto 20px;
+  text-align: center;
+  font-size: 20px;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background: linear-gradient(#141e30, #243b55);
+  height: 100vh;
+  width: 100%;
+}
+
+.loginbox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  padding: 40px;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+}
+.loginbox h2 {
+  margin: 0 0 30px;
+  padding: 0;
+  color: #fff;
+  text-align: center;
+}
+.loginbox .user-box {
+  position: relative;
+}
+.loginbox .user-box input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 30px;
+  border: none;
+  border-bottom: 1px solid #fff;
+  outline: none;
+  background: transparent;
+}
+.loginbox .user-box label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #fff;
+  pointer-events: none;
+  transition: 0.5s;
+}
+
+.loginbox .user-box input:focus ~ label,
+.loginbox .user-box input:valid ~ label {
+  top: -20px;
+  left: 0px;
+  color: #03e9f4;
+  font-size: 12px;
+}
+.loginbox form button {
+  position: relative;
+  background-color: #141e30;
+  display: inline-block;
+  padding: 10px 20px;
+  color: #03e9f4;
+  font-size: 16px;
+  border-radius: 5px;
+  text-decoration: none;
+  text-transform: uppercase;
+  overflow: hidden;
+  transition: 0.5s;
+  margin-top: 40px;
+  letter-spacing: 3px;
+}
+.loginbox button:hover {
+  background: #2891e7;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #2891e7, 0 0 15px #2891e7, 0 0 30px #2891e7;
+}
+/* CSS styles for the user interface */
+
+.seconddiv {
+max-width: 600px;
+margin: 50px auto;
+padding: 20px;
+background-color: #fff;
+border-radius: 10px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+text-align: center;
+}
+
+h2 {
+color: #007bff;
+margin-bottom: 20px;
+font-size: 24px;
+}
+
+form {
+margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="date"] {
+width: 100%;
+padding: 10px;
+margin: 5px 0;
+border: 1px solid #ccc;
+border-radius: 5px;
+}
+
+button {
+padding: 10px 20px;
+margin: 5px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+background-color: #007bff;
+color: #fff;
+font-size: 16px;
+transition: background-color 0.3s ease;
+}
+
+button:hover {
+background-color: #0056b3;
+}
+
+button:disabled {
+background-color: #ccc;
+cursor: not-allowed;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+}
+
+th, td {
+padding: 10px;
+border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+background-color: #f2f2f2;
+}
+
+#reportContainer {
+margin-top: 20px;
+text-align: left;
+}
+
+/* Animations */
+
+@keyframes fadeIn {
+from { opacity: 0; }
+to { opacity: 1; }
+}
+
+.fadeIn {
+animation: fadeIn 0.5s ease;
+}
+
+    </style>
+  </head>
+  <body>
+    <div id="heading"><h1>Attendance Management System</h1></div>
+    <div class="loginbox" id="main">
+      <h2>Login</h2>
+      <form>
+        <div class="user-box">
+          <input type="text" id="employeeID" name="employeeID" required="" />
+          <label>Employee ID</label>
+        </div>
+        <div class="user-box">
+          <input type="Password" id="password" name="password" required="" />
+          <label>Password</label>
+        </div>
+        <button type="button" onclick="authenticate()">Submit</button>
+      </form>
+    </div>
+    <div class="seconddiv" style="display: none;" id="dashboard">
+      <button id="clockInBtn" onclick="handleClockIn()" >Clock In</button>
+      <button id="clockOutBtn" onclick="handleClockOut()" >Clock Out</button>
+      <form id="leaveForm">
+        <label for="leaveDate">Leave Date:</label>
+        <input type="date" id="leaveDate" name="leaveDate" required />
+        <label for="leaveReason">Leave Reason:</label>
+        <textarea id="leaveReason" name="leaveReason" rows="3"></textarea>
+        <button type="submit" id="applyLeaveBtn" onclick="handleLeaveSubmission()">Apply Leave</button>
+      </form>
+      <button id="generateReportBtn" onclick="generateReport()" >Generate Report</button>
+      <div id="reportContainer"></div>
+    </div>
+    <script>
+        const loginbox = document.getElementById("loginbox");
+
+function authenticate() {
+    var employeeID = document.getElementById("employeeID").value;
+    var password = document.getElementById("password").value;
+
+    if (employeeID === "admin" && password === "password") {
+        // Authentication successful, display dashboard and enable buttons
+        document.getElementById("main").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        enableButtons();
+    } else {
+        alert("Invalid employee ID or password. Please try again.");
+    }
+}
+
+function enableButtons() {
+    const clockInBtn = document.getElementById("clockInBtn");
+    const clockOutBtn = document.getElementById("clockOutBtn");
+    const applyLeaveBtn = document.getElementById("applyLeaveBtn");
+    const generateReportBtn = document.getElementById("generateReportBtn");
+
+    clockInBtn.disabled = false;
+    clockOutBtn.disabled = false;
+    applyLeaveBtn.disabled = false;
+    generateReportBtn.disabled = false;
+}
+
+const clockInBtn = document.getElementById("clockInBtn");
+const clockOutBtn = document.getElementById("clockOutBtn");
+const leaveForm = document.getElementById("leaveForm");
+const applyLeaveBtn = document.getElementById("applyLeaveBtn");
+const generateReportBtn = document.getElementById("generateReportBtn");
+const reportContainer = document.getElementById("reportContainer");
+
+let clockedInTime = null;
+let clockedOutTime = null;
+
+// Function to handle clock in action
+function handleClockIn() {
+    clockedInTime = new Date(); // Update last clock in time
+    alert("Clocked in successfully!");
+}
+
+// Function to handle clock out action
+function handleClockOut() {
+    clockedOutTime = new Date(); // Update clocked out time
+    alert("Clocked out successfully!");
+}
+
+// Function to handle leave form submission
+function handleLeaveSubmission() {
+    const leaveDate = document.getElementById("leaveDate").value;
+    const leaveReason = document.getElementById("leaveReason").value;
+
+    // Store leave data in localStorage
+    const leaves = JSON.parse(localStorage.getItem("leaves")) || [];
+    leaves.push({ date: leaveDate, reason: leaveReason });
+    localStorage.setItem("leaves", JSON.stringify(leaves));
+
+    alert("Leave applied successfully!");
+}
+
+// Function to generate the report
+function generateReport() {
+    let html = "<h3>Attendance Report</h3>";
+
+    // Retrieve attendance records from local storage
+    const attendanceRecords = JSON.parse(localStorage.getItem("attendanceRecords")) || [];
+    if (attendanceRecords.length > 0) {
+        html += "<table>";
+        html += "<tr><th>User ID</th><th>Name</th><th>Action</th><th>Timestamp</th></tr>";
+        attendanceRecords.forEach((record) => {
+            html += `<tr><td>${record.userId}</td><td>${record.name}</td><td>${record.action}</td><td>${record.timestamp}</td></tr>`;
+        });
+        html += "</table>";
+    } else {
+        html += "<p>No attendance records available</p>";
+    }
+
+    // Retrieve leaves from local storage
+    const leaves = JSON.parse(localStorage.getItem("leaves")) || [];
+    if (leaves.length > 0) {
+        html += "<h3>Leave Records</h3>";
+        html += "<table>";
+        html += "<tr><th>Date</th><th>Reason</th></tr>";
+        leaves.forEach((leave) => {
+            html += `<tr><td>${leave.date}</td><td>${leave.reason}</td></tr>`;
+        });
+        html += "</table>";
+    } else {
+        html += "<p>No leave records available</p>";
+    }
+
+    // Calculate total work time
+    let totalWorkTime = 0;
+    if (clockedInTime && clockedOutTime) {
+        totalWorkTime = clockedOutTime - clockedInTime; // Difference in milliseconds
+    }
+
+    // Convert total work time to hours and minutes
+    const totalHours = Math.floor(totalWorkTime / (1000 * 60 * 60));
+    const totalMinutes = Math.floor((totalWorkTime % (1000 * 60 * 60)) / (1000 * 60));
+
+    html += `<p>Total Work Time: ${totalHours} hours ${totalMinutes} minutes</p>`;
+
+    reportContainer.innerHTML = html;
+}
+
+// Attach event listeners to buttons and form
+clockInBtn.addEventListener("click", handleClockIn);
+clockOutBtn.addEventListener("click", handleClockOut);
+leaveForm.addEventListener("submit", handleLeaveSubmission);
+generateReportBtn.addEventListener("click", generateReport);
+
+    </script>
+  </body>
+</html>
